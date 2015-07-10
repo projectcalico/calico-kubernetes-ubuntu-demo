@@ -1,0 +1,13 @@
+#! /usr/bin/bash
+# This node's IPv4 address
+DEFAULT_IPV4=<DEFAULT_IPV4>
+
+# The kubernetes master IP
+KUBERNETES_MASTER=<KUBERNETES_MASTER>
+
+# Location of etcd cluster used by Calico.  By default, this uses the etcd
+# instance running on the Kubernetes Master
+ETCD_AUTHORITY=<KUBERNETES_MASTER>:4001
+
+# The kubernetes-apiserver location - used by the calico plugin
+KUBE_API_ROOT=https://<KUBERNETES_MASTER>:443/api/v1/

@@ -1,0 +1,5 @@
+# The master's IPv4 address - reachable by the kubernetes nodes.
+DEFAULT_IPV4=<DEFAULT_IPV4>
+
+# Location of the kubernetes binaries.
+KUBERNETES_LOC=<KUBERNETES_IP>

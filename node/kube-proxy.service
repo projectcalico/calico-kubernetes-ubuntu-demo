@@ -1,0 +1,10 @@
+[Unit]
+Description=Kubernetes Proxy
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=calico-node.service
+
+[Service]
+EnvironmentFile=/etc/network-environment
+ExecStart=/usr/bin/kube-proxy --master=http://${KUBERNETES_MASTER}:8080 --logtostderr=true
+Restart=always
+RestartSec=10

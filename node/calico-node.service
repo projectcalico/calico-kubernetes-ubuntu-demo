@@ -1,0 +1,12 @@
+[Unit]
+Description=calicoctl node
+After=get-calico-tools.service
+
+[Service]
+EnvironmentFile=/etc/network-environment
+User=root
+PermissionsStartOnly=true
+ExecStartPre=/usr/bin/calicoctl checksystem --fix
+ExecStart=/usr/bin/calicoctl node --ip=${DEFAULT_IPV4}
+RemainAfterExit=yes
+Type=oneshot

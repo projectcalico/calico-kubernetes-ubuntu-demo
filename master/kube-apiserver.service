@@ -1,0 +1,17 @@
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+Requires=etcd.service
+After=etcd.service
+
+[Service]
+EnvironmentFile=/etc/network-environment
+ExecStart=/usr/bin/kube-apiserver \
+--address=0.0.0.0 \
+--port=8080 \
+--service-cluster-ip-range=10.100.0.0/16 \
+--etcd_servers=http://127.0.0.1:4001 \
+--public_address_override=${DEFAULT_IPV4} \
+--logtostderr=true
+Restart=always
+RestartSec=10

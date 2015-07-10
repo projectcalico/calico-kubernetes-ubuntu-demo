@@ -1,0 +1,15 @@
+[Unit]
+Description=etcd
+After=network-online.service
+
+[Service]
+EnvironmentFile=/etc/network-environment
+User=calico
+PermissionsStartOnly=true
+ExecStart=/usr/bin/etcd \
+--name ${DEFAULT_IPV4} \
+--addr ${DEFAULT_IPV4}:4001 \
+--data-dir /var/lib/etcd \
+--bind-addr 0.0.0.0:4001
+Restart=always
+RestartSec=10s
