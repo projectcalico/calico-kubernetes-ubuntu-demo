@@ -125,7 +125,7 @@ sudo mv -f calico_kubernetes /usr/libexec/kubernetes/kubelet-plugins/net/exec/ca
 ```
 >Note: we change the name of the plugin to 'calico' as the plugin must share the same name as the directory it is placed in.
 
-3.) Install the sample systemd processes settings for launching kubernetes services
+4.) Install the sample systemd processes settings for launching kubernetes services
 ```
 sudo cp -f calico-kubernetes-ubuntu-demo/node/*.service /etc/systemd
 sudo systemctl enable /etc/systemd/calico-node.service
@@ -133,14 +133,14 @@ sudo systemctl enable /etc/systemd/kube-proxy.service
 sudo systemctl enable /etc/systemd/kube-kubelet.service
 ```
 
-4.) Launch the processes. (You may want to consider checking their status after to ensure everything is running)
+5.) Launch the processes. (You may want to consider checking their status after to ensure everything is running)
 ```
 sudo systemctl start calico-node.service
 sudo systemctl start kube-proxy.service
 sudo systemctl start kube-kubelet.service
 ```
 
-5.) Use calicoctl to add an IP Pool. We must specify where the etcd daemon is in order for calicoctl to communicate with it.
+6.) Use calicoctl to add an IP Pool. We must specify where the etcd daemon is in order for calicoctl to communicate with it.
 ```
 ETCD_AUTHORITY=<MASTER_IP>:4001 calicoctl pool add 172.17.0.0/16
 ```
