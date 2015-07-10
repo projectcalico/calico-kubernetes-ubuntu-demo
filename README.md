@@ -29,24 +29,24 @@ On each Node Agent:
 The calico networking plugin for kubernetes is run on each node agent, so the master node setup process is not unlike any other standard Kubernetes deployment. In this tutorial, we'll provide sample systemctl services files to quickly get all the required kubernetes processes running on the host.
 
 #### Setup environment variables for systemd services
-1. Get the sample configurations for this tutorial, and enter the `master` directory.
+1.) Get the sample configurations for this tutorial, and enter the `master` directory.
 ```
 git clone https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo.git
 ```
 
-2. Copy the network-environment-template 
+2.) Copy the network-environment-template 
 ```
 cp calico-kubernetes-ubuntu-demo/master/network-environment-template network-environment
 ```
-3. Edit `network-environment` to represent your current host's settings.
-4. Move the settings into `/etc`
+3.) Edit `network-environment` to represent your current host's settings.
+4.) Move the settings into `/etc`
 ```
 sudo mv -f network-environment /etc
 ```
 
 #### Install Kubernetes
 
-1. Build & Install Kubernetes binaries
+1.) Build & Install Kubernetes binaries
 ```
 # Get the Kubernetes Source
 wget https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v0.20.2/kubernetes.tar.gz
@@ -60,7 +60,7 @@ sudo cp -f binaries/kubectl /usr/bin
 ```
 >You can customize your etcd version,  k8s version by changing variable `ETCD_VERSION` and `K8S_VERSION` in build.sh, default etcd version is 2.0.9, and K8s version is 0.18.0.
 
-2. Install the sample systemd processes settings for launching kubernetes services
+2.) Install the sample systemd processes settings for launching kubernetes services
 ```
 sudo cp -f calico-kubernetes-demo/ubuntu/master/*.service /etc/systemd
 systemctl enable /etc/systemd/etcd.service
@@ -69,7 +69,7 @@ systemctl enable /etc/systemd/kube-controller-manager.service
 systemctl enable /etc/systemd/kube-scheduler.service
 ```
 
-3. Launch the processes. (You may want to consider checking their status after to ensure everything is running)
+3.) Launch the processes. (You may want to consider checking their status after to ensure everything is running)
 ```
 systemctl start etcd.service
 systemctl start kube-apiserver.service
@@ -81,24 +81,24 @@ systemctl start kube-scheduler.service
 Perform these steps once on each node, ensuring you appropriately set the environment variables on each node
 
 #### Setup environment variables for systemd services
-1. Get the sample configurations for this tutorial, and enter the `node` directory.
+1.) Get the sample configurations for this tutorial, and enter the `node` directory.
 ```
 git clone https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo.git
 ```
 
-2. Copy the network-environment-template 
+2.) Copy the network-environment-template 
 ```
 cp calico-kubernetes-ubuntu-demo/node/network-environment-template network-environment
 ```
-3. Edit  `network-environment` to represent your current host's settings.
-4. Move the settings into `/etc`
+3.) Edit  `network-environment` to represent your current host's settings.
+4.) Move the settings into `/etc`
 ```
 sudo mv -f network-environment /etc
 ```
 
 #### Install Kubernetes & Calico
 
-1. Build & Install Kubernetes binaries
+1.) Build & Install Kubernetes binaries
 ```
 # Get the Kubernetes Source
 wget https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v0.20.2/kubernetes.tar.gz
@@ -110,14 +110,14 @@ kubernetes/cluster/ubuntu/build.sh
 sudo cp -f binaries/minion/* /usr/bin
 ```
 
-2. Install calicoctl
+2.) Install calicoctl
 ```
 wget https://github.com/Metaswitch/calico-docker/releases/download/v0.5.0/calicoctl
 chmod +x calicoctl
 sudo cp -f calicoctl /usr/bin
 ```
 
-3. Install calico kubernetes plugin
+3.) Install calico kubernetes plugin
 ```
 wget https://github.com/Metaswitch/calico-docker/releases/download/v0.4.8/calico_kubernetes
 sudo mkdir -p /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico
@@ -125,7 +125,7 @@ sudo mv -f calico_kubernetes /usr/libexec/kubernetes/kubelet-plugins/net/exec/ca
 ```
 >Note: we change the name of the plugin to 'calico' as the plugin must share the same name as the directory it is placed in.
 
-3. Install the sample systemd processes settings for launching kubernetes services
+3.) Install the sample systemd processes settings for launching kubernetes services
 ```
 sudo cp -f calico-kubernetes-ubuntu-demo/node/*.service /etc/systemd
 sudo systemctl enable /etc/systemd/calico-node.service
@@ -133,14 +133,14 @@ sudo systemctl enable /etc/systemd/kube-proxy.service
 sudo systemctl enable /etc/systemd/kube-kubelet.service
 ```
 
-4. Launch the processes. (You may want to consider checking their status after to ensure everything is running)
+4.) Launch the processes. (You may want to consider checking their status after to ensure everything is running)
 ```
 sudo systemctl start calico-node.service
 sudo systemctl start kube-proxy.service
 sudo systemctl start kube-kubelet.service
 ```
 
-5. Use calicoctl to add an IP Pool. We must specify where the etcd daemon is in order for calicoctl to communicate with it.
+5.) Use calicoctl to add an IP Pool. We must specify where the etcd daemon is in order for calicoctl to communicate with it.
 ```
 ETCD_AUTHORITY=<MASTER_IP>:4001 calicoctl pool add 172.17.0.0/16
 ```
@@ -149,4 +149,3 @@ ETCD_AUTHORITY=<MASTER_IP>:4001 calicoctl pool add 172.17.0.0/16
 At this point, you have a fully functioning cluster running on kubernetes with a master and 2 nodes networked with Calico. Lets start some services and see that things work.
 
 `$ kubectl get nodes`
-
