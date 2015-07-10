@@ -33,13 +33,12 @@ The calico networking plugin for kubernetes is run on each node agent, so the ma
 ```
 git clone https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo.git
 ```
-
 2.) Copy the network-environment-template from the `master` directory
 ```
 cp calico-kubernetes-ubuntu-demo/master/network-environment-template network-environment
 ```
 3.) Edit `network-environment` to represent your current host's settings.
-```
+
 4.) Move the settings into `/etc`
 ```
 sudo mv -f network-environment /etc
@@ -92,7 +91,7 @@ git clone https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo.git
 cp calico-kubernetes-ubuntu-demo/node/network-environment-template network-environment
 ```
 3.) Edit  `network-environment` to represent your current host's settings.
-```
+
 4.) Move the settings into `/etc`
 ```
 sudo mv -f network-environment /etc
