@@ -29,16 +29,17 @@ On each Node Agent:
 The calico networking plugin for kubernetes is run on each node agent, so the master node setup process is not unlike any other standard Kubernetes deployment. In this tutorial, we'll provide sample systemctl services files to quickly get all the required kubernetes processes running on the host.
 
 #### Setup environment variables for systemd services
-1.) Get the sample configurations for this tutorial, and enter the `master` directory.
+1.) Get the sample configurations for this tutorial
 ```
 git clone https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo.git
 ```
 
-2.) Copy the network-environment-template 
+2.) Copy the network-environment-template from the `master` directory
 ```
 cp calico-kubernetes-ubuntu-demo/master/network-environment-template network-environment
 ```
 3.) Edit `network-environment` to represent your current host's settings.
+```
 4.) Move the settings into `/etc`
 ```
 sudo mv -f network-environment /etc
@@ -62,7 +63,7 @@ sudo cp -f binaries/kubectl /usr/bin
 
 2.) Install the sample systemd processes settings for launching kubernetes services
 ```
-sudo cp -f calico-kubernetes-demo/ubuntu/master/*.service /etc/systemd
+sudo cp -f calico-kubernetes-demo/master/*.service /etc/systemd
 systemctl enable /etc/systemd/etcd.service
 systemctl enable /etc/systemd/kube-apiserver.service
 systemctl enable /etc/systemd/kube-controller-manager.service
@@ -81,16 +82,17 @@ systemctl start kube-scheduler.service
 Perform these steps once on each node, ensuring you appropriately set the environment variables on each node
 
 #### Setup environment variables for systemd services
-1.) Get the sample configurations for this tutorial, and enter the `node` directory.
+1.) Get the sample configurations for this tutorial
 ```
 git clone https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo.git
 ```
 
-2.) Copy the network-environment-template 
+2.) Copy the network-environment-template from the `node` directory
 ```
 cp calico-kubernetes-ubuntu-demo/node/network-environment-template network-environment
 ```
 3.) Edit  `network-environment` to represent your current host's settings.
+```
 4.) Move the settings into `/etc`
 ```
 sudo mv -f network-environment /etc
