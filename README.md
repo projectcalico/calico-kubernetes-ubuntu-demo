@@ -63,18 +63,23 @@ sudo cp -f binaries/kubectl /usr/bin
 2.) Install the sample systemd processes settings for launching kubernetes services
 ```
 sudo cp -f calico-kubernetes-demo/master/*.service /etc/systemd
-systemctl enable /etc/systemd/etcd.service
-systemctl enable /etc/systemd/kube-apiserver.service
-systemctl enable /etc/systemd/kube-controller-manager.service
-systemctl enable /etc/systemd/kube-scheduler.service
+sudo systemctl enable /etc/systemd/etcd.service
+sudo systemctl enable /etc/systemd/kube-apiserver.service
+sudo systemctl enable /etc/systemd/kube-controller-manager.service
+sudo systemctl enable /etc/systemd/kube-scheduler.service
 ```
 
-3.) Launch the processes. (You may want to consider checking their status after to ensure everything is running)
+3.) Launch the processes.
 ```
-systemctl start etcd.service
-systemctl start kube-apiserver.service
-systemctl start kube-controller-manager.service
-systemctl start kube-scheduler.service
+sudo systemctl start etcd.service
+sudo systemctl start kube-apiserver.service
+sudo systemctl start kube-controller-manager.service
+sudo systemctl start kube-scheduler.service
+```
+
+You may want to consider checking their status after to ensure everything is running with:
+```
+systemctl status etcd.service kube-*
 ```
 
 ### Setup Nodes
@@ -134,11 +139,16 @@ sudo systemctl enable /etc/systemd/kube-proxy.service
 sudo systemctl enable /etc/systemd/kube-kubelet.service
 ```
 
-5.) Launch the processes. (You may want to consider checking their status after to ensure everything is running)
+5.) Launch the processes.
 ```
 sudo systemctl start calico-node.service
 sudo systemctl start kube-proxy.service
 sudo systemctl start kube-kubelet.service
+```
+
+You may want to consider checking their status after to ensure everything is running with:
+```
+systemctl status calico-node.service kube-*
 ```
 
 6.) Use calicoctl to add an IP Pool. We must specify where the etcd daemon is in order for calicoctl to communicate with it.
