@@ -128,6 +128,7 @@ sudo cp -f calicoctl /usr/bin
 wget https://github.com/Metaswitch/calico-docker/releases/download/v0.4.8/calico_kubernetes
 sudo mkdir -p /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico
 sudo mv -f calico_kubernetes /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico/calico
+sudo chmod +x /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico/calico
 ```
 >Note: we change the name of the plugin to 'calico' as the plugin must share the same name as the directory it is placed in.
 
