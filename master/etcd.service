@@ -4,7 +4,6 @@ After=network-online.service
 
 [Service]
 EnvironmentFile=/etc/network-environment
-User=calico
 PermissionsStartOnly=true
 ExecStart=/usr/bin/etcd \
 --name ${DEFAULT_IPV4} \

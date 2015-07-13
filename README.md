@@ -29,16 +29,16 @@ On each Node Agent:
 The calico networking plugin for kubernetes is run on each node agent, so the master node setup process is not unlike any other standard Kubernetes deployment. In this tutorial, we'll provide sample systemctl services files to quickly get all the required kubernetes processes running on the host.
 
 #### Setup environment variables for systemd services
-1.) Get the sample configurations for this tutorial, and enter the `master` directory.
+1.) Get the sample configurations for this tutorial
 ```
 git clone https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo.git
 ```
-
-2.) Copy the network-environment-template 
+2.) Copy the network-environment-template from the `master` directory
 ```
 cp calico-kubernetes-ubuntu-demo/master/network-environment-template network-environment
 ```
 3.) Edit `network-environment` to represent your current host's settings.
+
 4.) Move the settings into `/etc`
 ```
 sudo mv -f network-environment /etc
@@ -62,35 +62,41 @@ sudo cp -f binaries/kubectl /usr/bin
 
 2.) Install the sample systemd processes settings for launching kubernetes services
 ```
-sudo cp -f calico-kubernetes-demo/ubuntu/master/*.service /etc/systemd
-systemctl enable /etc/systemd/etcd.service
-systemctl enable /etc/systemd/kube-apiserver.service
-systemctl enable /etc/systemd/kube-controller-manager.service
-systemctl enable /etc/systemd/kube-scheduler.service
+sudo cp -f calico-kubernetes-demo/master/*.service /etc/systemd
+sudo systemctl enable /etc/systemd/etcd.service
+sudo systemctl enable /etc/systemd/kube-apiserver.service
+sudo systemctl enable /etc/systemd/kube-controller-manager.service
+sudo systemctl enable /etc/systemd/kube-scheduler.service
 ```
 
-3.) Launch the processes. (You may want to consider checking their status after to ensure everything is running)
+3.) Launch the processes.
 ```
-systemctl start etcd.service
-systemctl start kube-apiserver.service
-systemctl start kube-controller-manager.service
-systemctl start kube-scheduler.service
+sudo systemctl start etcd.service
+sudo systemctl start kube-apiserver.service
+sudo systemctl start kube-controller-manager.service
+sudo systemctl start kube-scheduler.service
+```
+
+You may want to consider checking their status after to ensure everything is running with:
+```
+systemctl status etcd.service kube-*
 ```
 
 ### Setup Nodes
 Perform these steps once on each node, ensuring you appropriately set the environment variables on each node
 
 #### Setup environment variables for systemd services
-1.) Get the sample configurations for this tutorial, and enter the `node` directory.
+1.) Get the sample configurations for this tutorial
 ```
 git clone https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo.git
 ```
 
-2.) Copy the network-environment-template 
+2.) Copy the network-environment-template from the `node` directory
 ```
 cp calico-kubernetes-ubuntu-demo/node/network-environment-template network-environment
 ```
 3.) Edit  `network-environment` to represent your current host's settings.
+
 4.) Move the settings into `/etc`
 ```
 sudo mv -f network-environment /etc
@@ -122,6 +128,7 @@ sudo cp -f calicoctl /usr/bin
 wget https://github.com/Metaswitch/calico-docker/releases/download/v0.4.8/calico_kubernetes
 sudo mkdir -p /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico
 sudo mv -f calico_kubernetes /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico/calico
+sudo chmod +x /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico/calico
 ```
 >Note: we change the name of the plugin to 'calico' as the plugin must share the same name as the directory it is placed in.
 
@@ -133,11 +140,16 @@ sudo systemctl enable /etc/systemd/kube-proxy.service
 sudo systemctl enable /etc/systemd/kube-kubelet.service
 ```
 
-5.) Launch the processes. (You may want to consider checking their status after to ensure everything is running)
+5.) Launch the processes.
 ```
 sudo systemctl start calico-node.service
 sudo systemctl start kube-proxy.service
 sudo systemctl start kube-kubelet.service
+```
+
+You may want to consider checking their status after to ensure everything is running with:
+```
+systemctl status calico-node.service kube-*
 ```
 
 6.) Use calicoctl to add an IP Pool. We must specify where the etcd daemon is in order for calicoctl to communicate with it.
