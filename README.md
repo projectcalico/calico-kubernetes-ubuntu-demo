@@ -120,7 +120,7 @@ sudo mv -f network-environment /etc
 ##### Create the veth
 Instead of using docker's default interface (docker0), we will configure a new one to use desired IP ranges
 ```
-sudo brctl add cbr0
+sudo brctl addbr cbr0
 sudo ifconfig cbr0 up
 sudo ifconfig cbr0 <IP>/24
 ```
