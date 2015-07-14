@@ -48,14 +48,6 @@ cp calico-kubernetes-ubuntu-demo/master/network-environment-template network-env
 sudo mv -f network-environment /etc
 ```
 
-#### Install Calico on Master
-In order to allow the master to speak to the containers on each node, we will launch a calico-node which speaks BGP with the calico-node on the nodes. The calico-node.service will take care of this for us, we only need to install the binary for it to use.
-```
-wget https://github.com/Metaswitch/calico-docker/releases/download/v0.5.0/calicoctl
-chmod +x calicoctl
-sudo cp -f calicoctl /usr/bin
-```
-
 #### Install Kubernetes on Master
 1.) Build & Install Kubernetes binaries
 ```
@@ -79,7 +71,6 @@ sudo systemctl enable /etc/systemd/etcd.service
 sudo systemctl enable /etc/systemd/kube-apiserver.service
 sudo systemctl enable /etc/systemd/kube-controller-manager.service
 sudo systemctl enable /etc/systemd/kube-scheduler.service
-sudo systemctl enable /etc/systemd/calico-node.service
 ```
 
 3.) Launch the processes.
@@ -88,10 +79,22 @@ sudo systemctl start etcd.service
 sudo systemctl start kube-apiserver.service
 sudo systemctl start kube-controller-manager.service
 sudo systemctl start kube-scheduler.service
+```
+> *You may want to consider checking their status after to ensure everything is running.*
+
+#### Install Calico on Master
+In order to allow the master to speak to the containers on each node, we will launch a calico-node which speaks BGP with the calico-node on the nodes. The calico-node.service will take care of this for us, we only need to install the binary for it to use.
+```
+# Install the calicoctl binary, which will be used to launch calico
+wget https://github.com/Metaswitch/calico-docker/releases/download/v0.5.0/calicoctl
+chmod +x calicoctl
+sudo cp -f calicoctl /usr/bin
+
+# Install and start the calico service
+sudo cp -f calico-kubernetes-ubuntu-demo/master/calico-node.service /etc/systemd
+sudo systemctl enable /etc/systemd/etcd.service
 sudo systemctl start calico-node.service
 ```
-
-> *You may want to consider checking their status after to ensure everything is running.*
 
 ### Setup Nodes
 Perform these steps once on each node, ensuring you appropriately set the environment variables on each node
@@ -155,6 +158,7 @@ sudo chmod +x /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico/calico
 sudo systemctl enable /etc/systemd/calico-node.service
 sudo systemctl start calico-node.service
 ```
+
 2.) Use calicoctl to add an IP Pool. We must specify where the etcd daemon is in order for calicoctl to communicate with it.
 **NOTE: This step only needs to be performed once per kubernetes deployment, as it covers all the node's IP ranges.**
 ```
@@ -195,7 +199,7 @@ At this point, you have a fully functioning cluster running on kubernetes with a
 
 ## Connectivity to outside the cluster
 
-With this sample configuration, because the containers have private `192.168.0.0/16` IPs, you will need NAT to allow connectivity between containers and the internet. However, in a full datacenter deployment, NAT is not necessary, since Calico can peer with the border routers over BGP.
+With this sample configuration, because the containers have private `192.168.0.0/16` IPs, you will need NAT to allow   connectivity between containers and the internet. However, in a full datacenter deployment, NAT is not necessary, since Calico can peer with the border routers over BGP.
 
 #### NAT on the nodes
 
