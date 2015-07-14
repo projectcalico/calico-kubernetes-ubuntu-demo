@@ -74,7 +74,7 @@ sudo cp -f binaries/kubectl /usr/bin
 
 2.) Install the sample systemd processes settings for launching kubernetes services
 ```
-sudo cp -f calico-kubernetes-demo/master/*.service /etc/systemd
+sudo cp -f calico-kubernetes-ubuntu-demo/master/*.service /etc/systemd
 sudo systemctl enable /etc/systemd/etcd.service
 sudo systemctl enable /etc/systemd/kube-apiserver.service
 sudo systemctl enable /etc/systemd/kube-controller-manager.service
