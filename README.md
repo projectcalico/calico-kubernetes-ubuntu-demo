@@ -26,22 +26,24 @@ On each Node Agent:
 4. This demo assumes that none of the hosts have been configured with any kubernetes or Calico software yet.
 
 ## Starting a Cluster
-
+In this tutorial, we will provide sample systemd services to quickly get the core kubernetes services up and running.
 ### Setup Master
-The calico networking plugin for kubernetes is run on each node agent, so the master node setup process is not unlike any other standard Kubernetes deployment. In this tutorial, we'll provide sample systemctl services files to quickly get all the required kubernetes processes running on the host.
+First, get the sample configurations for this tutorial
+```
+wget https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo/archive/master.tar.gz
+tar -xvf master.tar.gz
+```
 
 #### Setup environment variables for systemd services
-1.) Get the sample configurations for this tutorial
-```
-git clone https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo.git
-```
-2.) Copy the network-environment-template from the `master` directory
+Many of the sample systemd services provided rely on environment variables on a per-node basis. Here we'll edit those environment variables and move them into place.
+
+1.) Copy the network-environment-template from the `master` directory for editing.
 ```
 cp calico-kubernetes-ubuntu-demo/master/network-environment-template network-environment
 ```
-3.) Edit `network-environment` to represent your current host's settings.
+2.) Edit `network-environment` to represent your current host's settings.
 
-4.) Move the `network-environment` into `/etc`
+3.) Move the `network-environment` into `/etc`
 ```
 sudo mv -f network-environment /etc
 ```
@@ -59,15 +61,16 @@ sudo cp -f calicoctl /usr/bin
 ```
 # Get the Kubernetes Source
 wget https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v0.20.2/kubernetes.tar.gz
+
 # Untar it
 tar -xf kubernetes.tar.gz
 tar -xf kubernetes/server/kubernetes-server-linux-amd64.tar.gz
 kubernetes/cluster/ubuntu/build.sh
+
 # Add binaries to /usr/bin
 sudo cp -f binaries/master/* /usr/bin
 sudo cp -f binaries/kubectl /usr/bin
 ```
->You can customize your etcd version,  k8s version by changing variable `ETCD_VERSION` and `K8S_VERSION` in build.sh, default etcd version is 2.0.9, and K8s version is 0.18.0.
 
 2.) Install the sample systemd processes settings for launching kubernetes services
 ```
