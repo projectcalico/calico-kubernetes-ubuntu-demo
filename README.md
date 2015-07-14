@@ -187,14 +187,32 @@ sudo systemctl start kube-kubelet.service
 ```
 >*You may want to consider checking their status after to ensure everything is running*
 
-
-## Custom Networking Topologies
-Depending on your networking setup, you may want to configure things differently, depending on:
-- If you are operating kubernetes across a network fabric that you control
-- If you own the addressable IP ranges
-- If you want containers to be accessible from the outside world
-
 #### Launch other Services With Kubernetes
 At this point, you have a fully functioning cluster running on kubernetes with a master and 2 nodes networked with Calico. Lets start some services and see that things work.
 
 `$ kubectl get nodes`
+
+
+## Connectivity to outside the cluster
+
+With this sample configuration, because the containers have private `192.168.0.0/16` IPs, you will need NAT to allow connectivity between containers and the internet. However, in a full datacenter deployment, NAT is not necessary, since Calico can peer with the border routers over BGP.
+
+#### NAT on the nodes
+
+The simplest method for enabling connectivity from containers to the internet is to use an iptables masquerade rule. This is the standard mechanism [recommended](https://github.com/GoogleCloudPlatform/kubernetes/blob/master/docs/admin/networking.md#google-compute-engine-gce) in the Kubernetes GCE environment.
+
+We need to NAT traffic that has a destination outside of the cluster. Internal traffic includes the nodes, and the container IP pools. Assuming that the master and nodes are in the `172.25.0.0/24` subnet, the cbr0 IP ranges are all in the `192.168.0.0/16` network, and the nodes use the interface `eth0` for external connectivity, a suitable masquerade chain would look like this:
+
+```
+iptables -t nat -N KUBE-OUTBOUND-NAT
+iptables -t nat -A KUBE-OUTBOUND-NAT -d 192.168.0.0/16 -o eth0 -j RETURN
+iptables -t nat -A KUBE-OUTBOUND-NAT -d 172.25.0.0/24 -o eth0 -j RETURN
+iptables -t nat -A KUBE-OUTBOUND-NAT -j MASQUERADE
+iptables -t nat -A POSTROUTING -j KUBE-OUTBOUND-NAT
+```
+
+This chain should be applied on the master and all nodes. In production, these rules should be persisted, e.g. with `iptables-persistent`.
+
+#### NAT at the border router
+
+In a datacenter environment, it is recommended to configure Calico to peer with the border routers over BGP. This means that the container IPs will be routable anywhere in the datacenter, and so NAT is not needed on the nodes (though it may be enabled at the datacenter edge to allow outbound-only internet connectivity).
