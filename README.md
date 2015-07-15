@@ -31,8 +31,8 @@ In this tutorial, we will provide sample systemd services to quickly get the cor
 ### Setup Master
 First, get the sample configurations for this tutorial
 ```
-wget https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo/archive/v1.0.tar.gz
-tar -xvf v1.0.tar.gz
+wget https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo/archive/master.tar.gz
+tar -xvf master.tar.gz
 ```
 
 #### Setup environment variables for systemd services
@@ -40,7 +40,7 @@ Many of the sample systemd services provided rely on environment variables on a 
 
 1.) Copy the network-environment-template from the `master` directory for editing.
 ```
-cp calico-kubernetes-ubuntu-demo-1.0/master/network-environment-template network-environment
+cp calico-kubernetes-ubuntu-demo-master/master/network-environment-template network-environment
 ```
 2.) Edit `network-environment` to represent your current host's settings.
 
@@ -67,7 +67,7 @@ sudo cp -f binaries/kubectl /usr/bin
 
 2.) Install the sample systemd processes settings for launching kubernetes services
 ```
-sudo cp -f calico-kubernetes-ubuntu-demo-1.0/master/*.service /etc/systemd
+sudo cp -f calico-kubernetes-ubuntu-demo-master/master/*.service /etc/systemd
 sudo systemctl enable /etc/systemd/etcd.service
 sudo systemctl enable /etc/systemd/kube-apiserver.service
 sudo systemctl enable /etc/systemd/kube-controller-manager.service
@@ -84,18 +84,19 @@ sudo systemctl start kube-scheduler.service
 > *You may want to consider checking their status after to ensure everything is running.*
 
 #### Install Calico on Master
-In order to allow the master to route to the containers on our nodes, we will launch the calico-node daemon which speaks BGP with the calico-node daemons on the nodes. The calico-node.service will take care of this for us, we only need to install the binary for it to use.
+In order to allow the master to route to pods on our nodes, we will launch the calico-node daemon on our master. This will allow it to speak BGP with each of the nodes in the cluster.
 ```
 # Install the calicoctl binary, which will be used to launch calico
-wget https://github.com/Metaswitch/calico-docker/releases/download/v0.4.8/calicoctl
+wget https://github.com/Metaswitch/calico-docker/releases/download/v0.5.1/calicoctl
 chmod +x calicoctl
 sudo cp -f calicoctl /usr/bin
 
 # Install and start the calico service
-sudo cp -f calico-kubernetes-ubuntu-demo-1.0/master/calico-node.service /etc/systemd
+sudo cp -f calico-kubernetes-ubuntu-demo-master/master/calico-node.service /etc/systemd
 sudo systemctl enable /etc/systemd/calico-node.service
 sudo systemctl start calico-node.service
 ```
+>Note: calico-node may take a few minutes on first boot while it downloads the calico-node docker image.
 
 ### Setup Nodes
 Perform these steps once on each node, ensuring you appropriately set the environment variables on each node
@@ -103,12 +104,13 @@ Perform these steps once on each node, ensuring you appropriately set the enviro
 #### Setup environment variables for systemd services
 1.) Get the sample configurations for this tutorial
 ```
-git clone https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo.git
+wget https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo/archive/master.tar.gz
+tar -xvf master.tar.gz
 ```
 
 2.) Copy the network-environment-template from the `node` directory
 ```
-cp calico-kubernetes-ubuntu-demo-1.0/node/network-environment-template network-environment
+cp calico-kubernetes-ubuntu-demo-master/node/network-environment-template network-environment
 ```
 3.) Edit `network-environment` to represent your current host's settings.
 
@@ -142,25 +144,22 @@ The Docker daemon must be started and told to use the already configured cbr0 in
 
 3.) Reload systemctl with `sudo systemctl daemon-reload`
 
+4.) Restart docker with with `sudo systemctl restart docker`
+
 #### Install Calico on the Node
-1.) Install calico and the Kubernetes plugin
+1.) Install Calico
 ```
 # Get the calicoctl binary
-wget https://github.com/Metaswitch/calico-docker/releases/download/v0.4.8/calicoctl
+wget https://github.com/Metaswitch/calico-docker/releases/download/v0.5.1/calicoctl
 chmod +x calicoctl
 sudo cp -f calicoctl /usr/bin
 
-# Install the calico-kubernetes plugin
-wget https://github.com/Metaswitch/calico-docker/releases/download/v0.4.8/calico_kubernetes
-sudo mkdir -p /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico
-sudo mv -f calico_kubernetes /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico/calico
-sudo chmod +x /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico/calico
-
 # Start calico on this node
-cp calico-kubernetes-ubuntu-demo-1.0/node/calico-node.service /etc/systemd
+sudo cp calico-kubernetes-ubuntu-demo-master/node/calico-node.service /etc/systemd
 sudo systemctl enable /etc/systemd/calico-node.service
 sudo systemctl start calico-node.service
 ```
+>The calico-node service will automatically get the kubernetes-calico plugin binary and install it on the host system.
 
 2.) Use calicoctl to add an IP pool. We must specify the IP and port that the master's etcd is listening on.
 **NOTE: This step only needs to be performed once per Kubernetes deployment, as it covers all the node's IP ranges.**
@@ -185,8 +184,8 @@ sudo cp -f binaries/minion/* /usr/bin
 
 2.) Install and launch the sample systemd processes settings for launching Kubernetes services
 ```
-sudo cp calico-kubernetes-ubuntu-demo-1.0/node/kube-proxy.service /etc/systemd/
-sudo cp calico-kubernetes-ubuntu-demo-1.0/node/kube-kubelet.service /etc/systemd/
+sudo cp calico-kubernetes-ubuntu-demo-master/node/kube-proxy.service /etc/systemd/
+sudo cp calico-kubernetes-ubuntu-demo-master/node/kube-kubelet.service /etc/systemd/
 sudo systemctl enable /etc/systemd/kube-proxy.service
 sudo systemctl enable /etc/systemd/kube-kubelet.service
 sudo systemctl start kube-proxy.service
