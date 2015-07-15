@@ -133,12 +133,13 @@ node-2  | 192.168.2.1/24
 node-X  | 192.168.X.1/24
 
 ##### Start docker on cbr0
-The Docker daemon must be started and told to use the already configured cbr0 instead of using the usual docker0, as well as disabling ip-masquerading and modification of the ip-tables. We've provided a `docker-cbr0.service` to quickly start the docker daemon with these settings. (Ensure docker isn't already running!)
-```
-sudo cp calico-kubernetes-ubuntu-demo/node/docker-cbr.service /etc/systemd
-sudo systemctl enable /etc/systemd/docker-cbr.service
-sudo systemctl start /etc/systemd/docker-cbr.service
-```
+The Docker daemon must be started and told to use the already configured cbr0 instead of using the usual docker0, as well as disabling ip-masquerading and modification of the ip-tables. 
+
+1.) Edit the ubuntu-15.04 docker.service for systemd at: `/lib/systemd/system/docker.service`
+
+2.) Find the line that reads `ExecStart=/usr/bin/docker -d -H fd://` and append the following flags: `--bridge=cbr0 --iptables=false --ip-masq=false`
+
+3.) Reload systemctl with `sudo systemctl daemon-reload`
 
 #### Install Calico on the Node
 1.) Install calico and the kubernetes plugin
@@ -155,6 +156,7 @@ sudo mv -f calico_kubernetes /usr/libexec/kubernetes/kubelet-plugins/net/exec/ca
 sudo chmod +x /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico/calico
 
 # Start calico on this node
+cp calico-kubernetes-ubuntu-demo/node/calico-node.service /etc/systemd
 sudo systemctl enable /etc/systemd/calico-node.service
 sudo systemctl start calico-node.service
 ```
@@ -180,6 +182,8 @@ sudo cp -f binaries/minion/* /usr/bin
 
 2.) Install the sample systemd processes settings for launching kubernetes services
 ```
+sudo cp calico-kubernetes-ubuntu-demo/node/kube-proxy.service
+sudo cp calico-kubernetes-ubuntu-demo/node/kube-kubelet.service
 sudo systemctl enable /etc/systemd/kube-proxy.service
 sudo systemctl enable /etc/systemd/kube-kubelet.service
 ```
