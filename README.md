@@ -93,7 +93,7 @@ sudo cp -f calicoctl /usr/bin
 
 # Install and start the calico service
 sudo cp -f calico-kubernetes-ubuntu-demo-1.0/master/calico-node.service /etc/systemd
-sudo systemctl enable /etc/systemd/etcd.service
+sudo systemctl enable /etc/systemd/calico-node.service
 sudo systemctl start calico-node.service
 ```
 
