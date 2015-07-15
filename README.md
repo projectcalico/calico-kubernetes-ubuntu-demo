@@ -31,8 +31,8 @@ In this tutorial, we will provide sample systemd services to quickly get the cor
 ### Setup Master
 First, get the sample configurations for this tutorial
 ```
-wget https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo/archive/master.tar.gz
-tar -xvf master.tar.gz
+wget https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo/archive/v1.0.tar.gz
+tar -xvf v1.0.tar.gz
 ```
 
 #### Setup environment variables for systemd services
@@ -40,7 +40,7 @@ Many of the sample systemd services provided rely on environment variables on a 
 
 1.) Copy the network-environment-template from the `master` directory for editing.
 ```
-cp calico-kubernetes-ubuntu-demo/master/network-environment-template network-environment
+cp calico-kubernetes-ubuntu-demo-1.0/master/network-environment-template network-environment
 ```
 2.) Edit `network-environment` to represent your current host's settings.
 
@@ -67,7 +67,7 @@ sudo cp -f binaries/kubectl /usr/bin
 
 2.) Install the sample systemd processes settings for launching kubernetes services
 ```
-sudo cp -f calico-kubernetes-ubuntu-demo/master/*.service /etc/systemd
+sudo cp -f calico-kubernetes-ubuntu-demo-1.0/master/*.service /etc/systemd
 sudo systemctl enable /etc/systemd/etcd.service
 sudo systemctl enable /etc/systemd/kube-apiserver.service
 sudo systemctl enable /etc/systemd/kube-controller-manager.service
@@ -92,7 +92,7 @@ chmod +x calicoctl
 sudo cp -f calicoctl /usr/bin
 
 # Install and start the calico service
-sudo cp -f calico-kubernetes-ubuntu-demo/master/calico-node.service /etc/systemd
+sudo cp -f calico-kubernetes-ubuntu-demo-1.0/master/calico-node.service /etc/systemd
 sudo systemctl enable /etc/systemd/etcd.service
 sudo systemctl start calico-node.service
 ```
@@ -108,7 +108,7 @@ git clone https://github.com/Metaswitch/calico-kubernetes-ubuntu-demo.git
 
 2.) Copy the network-environment-template from the `node` directory
 ```
-cp calico-kubernetes-ubuntu-demo/node/network-environment-template network-environment
+cp calico-kubernetes-ubuntu-demo-1.0/node/network-environment-template network-environment
 ```
 3.) Edit `network-environment` to represent your current host's settings.
 
@@ -157,7 +157,7 @@ sudo mv -f calico_kubernetes /usr/libexec/kubernetes/kubelet-plugins/net/exec/ca
 sudo chmod +x /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico/calico
 
 # Start calico on this node
-cp calico-kubernetes-ubuntu-demo/node/calico-node.service /etc/systemd
+cp calico-kubernetes-ubuntu-demo-1.0/node/calico-node.service /etc/systemd
 sudo systemctl enable /etc/systemd/calico-node.service
 sudo systemctl start calico-node.service
 ```
@@ -185,8 +185,8 @@ sudo cp -f binaries/minion/* /usr/bin
 
 2.) Install and launch the sample systemd processes settings for launching kubernetes services
 ```
-sudo cp calico-kubernetes-ubuntu-demo/node/kube-proxy.service
-sudo cp calico-kubernetes-ubuntu-demo/node/kube-kubelet.service
+sudo cp calico-kubernetes-ubuntu-demo-1.0/node/kube-proxy.service
+sudo cp calico-kubernetes-ubuntu-demo-1.0/node/kube-kubelet.service
 sudo systemctl enable /etc/systemd/kube-proxy.service
 sudo systemctl enable /etc/systemd/kube-kubelet.service
 sudo systemctl start kube-proxy.service
