@@ -3,27 +3,27 @@ Kubernetes Deployment On Bare-metal Ubuntu Nodes with Calico Networking
 
 ## Introduction
 
-This document describes how to deploy kubernetes on ubuntu bare metal nodes with Calico Networking plugin. See [projectcalico.org](http://projectcalico.org) for more information on what Calico is, and [the calicoctl github](https://github.com/Metaswitch/calico-docker) for more information on the command-line tool, `calicoctl`.
+This document describes how to deploy Kubernetes on ubuntu bare metal nodes with Calico Networking plugin. See [projectcalico.org](http://projectcalico.org) for more information on what Calico is, and [the calicoctl github](https://github.com/Metaswitch/calico-docker) for more information on the command-line tool, `calicoctl`.
 
-This guide will get a simple kubernetes architecture running across a master node and two node agents by starting the following processes with systemd:
+This guide will set up a simple Kubernetes cluster with a master and two nodes. We will start the following processes with systemd:
 
-On the Master node:
+On the Master:
 - `etcd`
 - `kube-apiserver`
 - `kube-controller-manager`
 - `kube-scheduler`
 - `calico-node`
 
-On each Node Agent:
+On each Node:
 - `kube-proxy`
 - `kube-kubelet`
 - `calico-node` 
 
 ## Prerequisites
 1. This guide uses `systemd` and thus uses Ubuntu 15.04 which supports systemd natively.
-2. All kubernetes nodes should have the latest docker stable version installed. At the time of writing, that is Docker 1.7.0.
+2. All Kubernetes nodes should have the latest docker stable version installed. At the time of writing, that is Docker 1.7.0.
 3. All hosts should be able to communicate with each other, as well as the internet, to download the necessary files.
-4. This demo assumes that none of the hosts have been configured with any kubernetes or Calico software yet.
+4. This demo assumes that none of the hosts have been configured with any Kubernetes or Calico software yet.
 
 ## Starting a Cluster
 In this tutorial, we will provide sample systemd services to quickly get the core kubernetes services up and running.
@@ -84,7 +84,7 @@ sudo systemctl start kube-scheduler.service
 > *You may want to consider checking their status after to ensure everything is running.*
 
 #### Install Calico on Master
-In order to allow the master to speak to the containers on each node, we will launch a calico-node which speaks BGP with the calico-node on the nodes. The calico-node.service will take care of this for us, we only need to install the binary for it to use.
+In order to allow the master to route to the containers on our nodes, we will launch the calico-node daemon which speaks BGP with the calico-node daemons on the nodes. The calico-node.service will take care of this for us, we only need to install the binary for it to use.
 ```
 # Install the calicoctl binary, which will be used to launch calico
 wget https://github.com/Metaswitch/calico-docker/releases/download/v0.4.8/calicoctl
@@ -143,7 +143,7 @@ The Docker daemon must be started and told to use the already configured cbr0 in
 3.) Reload systemctl with `sudo systemctl daemon-reload`
 
 #### Install Calico on the Node
-1.) Install calico and the kubernetes plugin
+1.) Install calico and the Kubernetes plugin
 ```
 # Get the calicoctl binary
 wget https://github.com/Metaswitch/calico-docker/releases/download/v0.4.8/calicoctl
@@ -162,8 +162,8 @@ sudo systemctl enable /etc/systemd/calico-node.service
 sudo systemctl start calico-node.service
 ```
 
-2.) Use calicoctl to add an IP Pool. We must specify where the etcd daemon is in order for calicoctl to communicate with it.
-**NOTE: This step only needs to be performed once per kubernetes deployment, as it covers all the node's IP ranges.**
+2.) Use calicoctl to add an IP pool. We must specify the IP and port that the master's etcd is listening on.
+**NOTE: This step only needs to be performed once per Kubernetes deployment, as it covers all the node's IP ranges.**
 ```
 ETCD_AUTHORITY=<MASTER_IP>:4001 calicoctl pool add 192.168.0.0/16
 ```
@@ -183,7 +183,7 @@ kubernetes/cluster/ubuntu/build.sh
 sudo cp -f binaries/minion/* /usr/bin
 ```
 
-2.) Install and launch the sample systemd processes settings for launching kubernetes services
+2.) Install and launch the sample systemd processes settings for launching Kubernetes services
 ```
 sudo cp calico-kubernetes-ubuntu-demo-1.0/node/kube-proxy.service /etc/systemd/
 sudo cp calico-kubernetes-ubuntu-demo-1.0/node/kube-kubelet.service /etc/systemd/
@@ -195,18 +195,18 @@ sudo systemctl start kube-kubelet.service
 >*You may want to consider checking their status after to ensure everything is running*
 
 #### Launch other Services With Calico-Kubernetes
-At this point, you have a fully functioning cluster running on kubernetes with a master and 2 nodes networked with Calico.
+At this point, you have a fully functioning cluster running on Kubernetes with a master and 2 nodes networked with Calico.
 
 
 ## Connectivity to outside the cluster
 
-With this sample configuration, because the containers have private `192.168.0.0/16` IPs, you will need NAT to allow   connectivity between containers and the internet. However, in a full datacenter deployment, NAT is not necessary, since Calico can peer with the border routers over BGP.
+With this sample configuration, because the containers have private `192.168.0.0/16` IPs, you will need NAT to allow   connectivity between containers and the internet. However, in a full datacenter deployment, NAT is not always necessary, since Calico can peer with the border routers over BGP.
 
 #### NAT on the nodes
 
 The simplest method for enabling connectivity from containers to the internet is to use an iptables masquerade rule. This is the standard mechanism [recommended](https://github.com/GoogleCloudPlatform/kubernetes/blob/master/docs/admin/networking.md#google-compute-engine-gce) in the Kubernetes GCE environment.
 
-We need to NAT traffic that has a destination outside of the cluster. Internal traffic includes the nodes, and the container IP pools. Assuming that the master and nodes are in the `172.25.0.0/24` subnet, the cbr0 IP ranges are all in the `192.168.0.0/16` network, and the nodes use the interface `eth0` for external connectivity, a suitable masquerade chain would look like this:
+We need to NAT traffic that has a destination outside of the cluster. Internal traffic includes the master/nodes, and the container IP pools. Assuming that the master and nodes are in the `172.25.0.0/24` subnet, the cbr0 IP ranges are all in the `192.168.0.0/16` network, and the nodes use the interface `eth0` for external connectivity, a suitable masquerade chain would look like this:
 
 ```
 sudo iptables -t nat -N KUBE-OUTBOUND-NAT
