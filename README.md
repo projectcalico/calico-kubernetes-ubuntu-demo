@@ -3,7 +3,7 @@ Kubernetes Deployment On Bare-metal Ubuntu Nodes with Calico Networking
 
 ## Introduction
 
-This document describes how to deploy kubernetes on ubuntu bare metal nodes with Calico Networking plugin. See [projectcalico.org](http://projectcalico.org) for more information on what Calico is, and [calico-docker](https://github.com/Metaswitch/calico-docker) for more information on the command-line tool, `calicoctl`.
+This document describes how to deploy kubernetes on ubuntu bare metal nodes with Calico Networking plugin. See [projectcalico.org](http://projectcalico.org) for more information on what Calico is, and [the calicoctl github](https://github.com/Metaswitch/calico-docker) for more information on the command-line tool, `calicoctl`.
 
 This guide will get a simple kubernetes architecture running across a master node and two node agents by starting the following processes with systemd:
 
@@ -21,12 +21,13 @@ On each Node Agent:
 
 ## Prerequisites
 1. This guide uses `systemd` and thus uses Ubuntu 15.04 which supports systemd natively.
-2. All kubernetes nodes should have the latest docker stable version installed. At the time of writing, that is Docker 1.7.0
-3. All hosts should be able to communicate with each other. Internet access is recommended in order to speed up dependency installation.
+2. All kubernetes nodes should have the latest docker stable version installed. At the time of writing, that is Docker 1.7.0.
+3. All hosts should be able to communicate with each other, as well as the internet, to download the necessary files.
 4. This demo assumes that none of the hosts have been configured with any kubernetes or Calico software yet.
 
 ## Starting a Cluster
 In this tutorial, we will provide sample systemd services to quickly get the core kubernetes services up and running.
+
 ### Setup Master
 First, get the sample configurations for this tutorial
 ```
@@ -172,33 +173,29 @@ ETCD_AUTHORITY=<MASTER_IP>:4001 calicoctl pool add 192.168.0.0/16
 ```
 # Get the Kubernetes Source
 wget https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v0.20.2/kubernetes.tar.gz
+
 # Untar it
 tar -xf kubernetes.tar.gz
 tar -xf kubernetes/server/kubernetes-server-linux-amd64.tar.gz
 kubernetes/cluster/ubuntu/build.sh
+
 # Add binaries to /usr/bin
 sudo cp -f binaries/minion/* /usr/bin
 ```
 
-2.) Install the sample systemd processes settings for launching kubernetes services
+2.) Install and launch the sample systemd processes settings for launching kubernetes services
 ```
 sudo cp calico-kubernetes-ubuntu-demo/node/kube-proxy.service
 sudo cp calico-kubernetes-ubuntu-demo/node/kube-kubelet.service
 sudo systemctl enable /etc/systemd/kube-proxy.service
 sudo systemctl enable /etc/systemd/kube-kubelet.service
-```
-
-3.) Launch the processes.
-```
 sudo systemctl start kube-proxy.service
 sudo systemctl start kube-kubelet.service
 ```
 >*You may want to consider checking their status after to ensure everything is running*
 
-#### Launch other Services With Kubernetes
-At this point, you have a fully functioning cluster running on kubernetes with a master and 2 nodes networked with Calico. Lets start some services and see that things work.
-
-`$ kubectl get nodes`
+#### Launch other Services With Calico-Kubernetes
+At this point, you have a fully functioning cluster running on kubernetes with a master and 2 nodes networked with Calico.
 
 
 ## Connectivity to outside the cluster

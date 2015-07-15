@@ -14,6 +14,3 @@ KUBE_API_ROOT=https://<KUBERNETES_MASTER>:443/api/v1/
 
 # Location of the calicoctl binary - used by the calico plugin
 CALICOCTL_PATH=/usr/bin/calicoctl
-
-# IP address of the DNS Server
-DNS_IP=<DNS_IP>
