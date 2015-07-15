@@ -87,13 +87,13 @@ sudo systemctl start kube-scheduler.service
 In order to allow the master to speak to the containers on each node, we will launch a calico-node which speaks BGP with the calico-node on the nodes. The calico-node.service will take care of this for us, we only need to install the binary for it to use.
 ```
 # Install the calicoctl binary, which will be used to launch calico
-wget https://github.com/Metaswitch/calico-docker/releases/download/v0.5.0/calicoctl
+wget https://github.com/Metaswitch/calico-docker/releases/download/v0.4.8/calicoctl
 chmod +x calicoctl
 sudo cp -f calicoctl /usr/bin
 
 # Install and start the calico service
 sudo cp -f calico-kubernetes-ubuntu-demo-1.0/master/calico-node.service /etc/systemd
-sudo systemctl enable /etc/systemd/etcd.service
+sudo systemctl enable /etc/systemd/calico-node.service
 sudo systemctl start calico-node.service
 ```
 
@@ -146,7 +146,7 @@ The Docker daemon must be started and told to use the already configured cbr0 in
 1.) Install calico and the kubernetes plugin
 ```
 # Get the calicoctl binary
-wget https://github.com/Metaswitch/calico-docker/releases/download/v0.5.0/calicoctl
+wget https://github.com/Metaswitch/calico-docker/releases/download/v0.4.8/calicoctl
 chmod +x calicoctl
 sudo cp -f calicoctl /usr/bin
 
@@ -185,8 +185,8 @@ sudo cp -f binaries/minion/* /usr/bin
 
 2.) Install and launch the sample systemd processes settings for launching kubernetes services
 ```
-sudo cp calico-kubernetes-ubuntu-demo-1.0/node/kube-proxy.service
-sudo cp calico-kubernetes-ubuntu-demo-1.0/node/kube-kubelet.service
+sudo cp calico-kubernetes-ubuntu-demo-1.0/node/kube-proxy.service /etc/systemd/
+sudo cp calico-kubernetes-ubuntu-demo-1.0/node/kube-kubelet.service /etc/systemd/
 sudo systemctl enable /etc/systemd/kube-proxy.service
 sudo systemctl enable /etc/systemd/kube-kubelet.service
 sudo systemctl start kube-proxy.service
@@ -209,11 +209,11 @@ The simplest method for enabling connectivity from containers to the internet is
 We need to NAT traffic that has a destination outside of the cluster. Internal traffic includes the nodes, and the container IP pools. Assuming that the master and nodes are in the `172.25.0.0/24` subnet, the cbr0 IP ranges are all in the `192.168.0.0/16` network, and the nodes use the interface `eth0` for external connectivity, a suitable masquerade chain would look like this:
 
 ```
-iptables -t nat -N KUBE-OUTBOUND-NAT
-iptables -t nat -A KUBE-OUTBOUND-NAT -d 192.168.0.0/16 -o eth0 -j RETURN
-iptables -t nat -A KUBE-OUTBOUND-NAT -d 172.25.0.0/24 -o eth0 -j RETURN
-iptables -t nat -A KUBE-OUTBOUND-NAT -j MASQUERADE
-iptables -t nat -A POSTROUTING -j KUBE-OUTBOUND-NAT
+sudo iptables -t nat -N KUBE-OUTBOUND-NAT
+sudo iptables -t nat -A KUBE-OUTBOUND-NAT -d 192.168.0.0/16 -o eth0 -j RETURN
+sudo iptables -t nat -A KUBE-OUTBOUND-NAT -d 172.25.0.0/24 -o eth0 -j RETURN
+sudo iptables -t nat -A KUBE-OUTBOUND-NAT -j MASQUERADE
+sudo iptables -t nat -A POSTROUTING -j KUBE-OUTBOUND-NAT
 ```
 
 This chain should be applied on the master and all nodes. In production, these rules should be persisted, e.g. with `iptables-persistent`.
