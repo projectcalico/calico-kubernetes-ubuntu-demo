@@ -185,8 +185,8 @@ sudo cp -f binaries/minion/* /usr/bin
 
 2.) Install and launch the sample systemd processes settings for launching kubernetes services
 ```
-sudo cp calico-kubernetes-ubuntu-demo-1.0/node/kube-proxy.service
-sudo cp calico-kubernetes-ubuntu-demo-1.0/node/kube-kubelet.service
+sudo cp calico-kubernetes-ubuntu-demo-1.0/node/kube-proxy.service /etc/systemd/
+sudo cp calico-kubernetes-ubuntu-demo-1.0/node/kube-kubelet.service /etc/systemd/
 sudo systemctl enable /etc/systemd/kube-proxy.service
 sudo systemctl enable /etc/systemd/kube-kubelet.service
 sudo systemctl start kube-proxy.service
