@@ -6,6 +6,6 @@ EnvironmentFile=/etc/network-environment
 User=root
 PermissionsStartOnly=true
 ExecStartPre=/usr/bin/calicoctl checksystem --fix
-ExecStart=/usr/bin/calicoctl node --ip=${DEFAULT_IPV4}
+ExecStart=/usr/bin/calicoctl node --ip=${DEFAULT_IPV4} --kubernetes
 RemainAfterExit=yes
 Type=oneshot
