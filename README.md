@@ -191,8 +191,7 @@ sudo systemctl start kube-kubelet.service
 >*You may want to consider checking their status after to ensure everything is running*
 
 ## Launch other Services With Calico-Kubernetes
-At this point, you have a fully functioning cluster running on Kubernetes with a Master and 2 Nodes networked with Calico. When new Pods are started, each Node's routing table will be populated with a direct /32 route to it. Since Calico is routing all traffic, it can impose per-pod security policies on these routes.
-
+At this point, you have a fully functioning cluster running on kubernetes with a master and 2 nodes networked with Calico. You can now follow any of the [standard documentation](https://github.com/GoogleCloudPlatform/kubernetes/tree/master/examples) to set up other services on your cluster.
 
 ## Connectivity to outside the cluster
 
