@@ -10,7 +10,7 @@ KUBERNETES_MASTER=<KUBERNETES_MASTER>
 ETCD_AUTHORITY=<KUBERNETES_MASTER>:4001
 
 # The kubernetes-apiserver location - used by the calico plugin
-KUBE_API_ROOT=https://<KUBERNETES_MASTER>:443/api/v1/
+KUBE_API_ROOT=http://<KUBERNETES_MASTER>:8080/api/v1/
 
 # Location of the calicoctl binary - used by the calico plugin
 CALICOCTL_PATH=/usr/bin/calicoctl
