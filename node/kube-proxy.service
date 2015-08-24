@@ -5,7 +5,6 @@ After=calico-node.service
 
 [Service]
 EnvironmentFile=/etc/network-environment
-ExecPre=/usr/bin/wget https://github.com/projectcalico/calico-kubernetes/releases/download/v0.1.1/kube-proxy -O /usr/bin/kube-proxy
 ExecStart=/usr/bin/kube-proxy --master=http://${KUBERNETES_MASTER}:8080 --logtostderr=true --legacy-userspace-proxy=false
 Restart=always
 RestartSec=10
