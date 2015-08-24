@@ -1,6 +1,6 @@
 [Unit]
 Description=Kubernetes Proxy
-Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+Documentation=https://github.com/kubernetes/kubernetes
 After=calico-node.service
 
 [Service]
