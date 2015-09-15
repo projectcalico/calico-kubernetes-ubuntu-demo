@@ -1,11 +1,13 @@
 [Unit]
 Description=calicoctl node
+After=docker.service
+Requires=docker.service
 
 [Service]
 EnvironmentFile=/etc/network-environment
 User=root
+Restart=always
 PermissionsStartOnly=true
 ExecStartPre=/usr/bin/calicoctl checksystem --fix
 ExecStart=/usr/bin/calicoctl node --ip=${DEFAULT_IPV4} --kubernetes
 RemainAfterExit=yes
-Type=oneshot
